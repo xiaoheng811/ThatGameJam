@@ -1540,6 +1540,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7790721996056100560, guid: 55396fdac50c44546a7f0ba90008483a, type: 3}
   m_PrefabInstance: {fileID: 356895769}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &408793095 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 9041c9a82f254aa40abccf565d8e096e, type: 3}
+  m_PrefabInstance: {fileID: 1191813353}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -2902,7 +2907,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9041c9a82f254aa40abccf565d8e096e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2093123116}
   m_SourcePrefab: {fileID: 100100000, guid: 9041c9a82f254aa40abccf565d8e096e, type: 3}
 --- !u!4 &717868701 stripped
 Transform:
@@ -5592,13 +5600,40 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9041c9a82f254aa40abccf565d8e096e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1191813357}
   m_SourcePrefab: {fileID: 100100000, guid: 9041c9a82f254aa40abccf565d8e096e, type: 3}
 --- !u!4 &1191813354 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9041c9a82f254aa40abccf565d8e096e, type: 3}
   m_PrefabInstance: {fileID: 1191813353}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1191813357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 408793095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cadfb7ddc79ed1a40b9e884a9eb6cdd9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThatGameJam.LevelOne.JellyObstacle
+  visual: {fileID: 0}
+  referenceSpeed: 1
+  movementSquash: 0.055
+  movementTilt: 3
+  movementFrequency: 2
+  impactSquashImpulse: 2.8
+  impactTiltImpulse: 95
+  impactCooldown: 0.12
+  springFrequency: 2.5
+  dampingRatio: 0.28
+  maxSquash: 0.22
+  maxTilt: 12
 --- !u!1 &1205685240
 GameObject:
   m_ObjectHideFlags: 0
@@ -8029,7 +8064,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 9041c9a82f254aa40abccf565d8e096e, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1695114293}
   m_SourcePrefab: {fileID: 100100000, guid: 9041c9a82f254aa40abccf565d8e096e, type: 3}
 --- !u!4 &1653466360 stripped
 Transform:
@@ -8338,6 +8376,35 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8387593374960647306, guid: 9c86d959bbeefeb40871ed79d83c8771, type: 3}
   m_PrefabInstance: {fileID: 1683250176}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1695114290 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 9041c9a82f254aa40abccf565d8e096e, type: 3}
+  m_PrefabInstance: {fileID: 1653466359}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1695114293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1695114290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cadfb7ddc79ed1a40b9e884a9eb6cdd9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThatGameJam.LevelOne.JellyObstacle
+  visual: {fileID: 0}
+  referenceSpeed: 1
+  movementSquash: 0.055
+  movementTilt: 3
+  movementFrequency: 2
+  impactSquashImpulse: 2.8
+  impactTiltImpulse: 95
+  impactCooldown: 0.12
+  springFrequency: 2.5
+  dampingRatio: 0.28
+  maxSquash: 0.22
+  maxTilt: 12
 --- !u!1 &1747958529
 GameObject:
   m_ObjectHideFlags: 0
@@ -10388,6 +10455,35 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7732439361042088352, guid: 8cd13d0f01e5e804c852ef704f1cdd20, type: 3}
   m_PrefabInstance: {fileID: 2078755565}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2093123113 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 9041c9a82f254aa40abccf565d8e096e, type: 3}
+  m_PrefabInstance: {fileID: 717868700}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2093123116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2093123113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cadfb7ddc79ed1a40b9e884a9eb6cdd9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThatGameJam.LevelOne.JellyObstacle
+  visual: {fileID: 0}
+  referenceSpeed: 1
+  movementSquash: 0.055
+  movementTilt: 3
+  movementFrequency: 2
+  impactSquashImpulse: 2.8
+  impactTiltImpulse: 95
+  impactCooldown: 0.12
+  springFrequency: 2.5
+  dampingRatio: 0.28
+  maxSquash: 0.22
+  maxTilt: 12
 --- !u!1 &2106479271
 GameObject:
   m_ObjectHideFlags: 0

@@ -32,6 +32,7 @@ namespace ThatGameJam.LevelOne
             [NonSerialized] public float wait;
             [NonSerialized] public Vector3 offset;
             [NonSerialized] public bool touching;
+            [NonSerialized] public JellyObstacle jelly;
         }
 
         public Level1Grid grid;
@@ -127,6 +128,8 @@ namespace ThatGameJam.LevelOne
             {
                 o.offset = Vector3.up * (o.model.position.y - grid.Position(o.home).y);
                 PrepareBody(o.model);
+                o.jelly = o.model.GetComponent<JellyObstacle>();
+                if (o.jelly) o.jelly.Bind(this);
             }
             goalRenderers = goal.GetComponentsInChildren<Renderer>(true);
             goalOriginals = new Material[goalRenderers.Length][];
@@ -171,6 +174,7 @@ namespace ThatGameJam.LevelOne
             {
                 o.toOther=true; o.progress=0; o.wait=obstacleWaitSeconds; o.touching=false;
                 o.model.position=grid.Position(o.home)+o.offset;
+                if (o.jelly) o.jelly.ResetWobble();
             }
             ui.ResetView(play);
             RefreshUI();
@@ -266,6 +270,7 @@ namespace ThatGameJam.LevelOne
         void Hit(Patrol o)
         {
             if(!Playing || moving) return;
+            if (o.jelly) o.jelly.Impact(player.position - o.model.position);
             // Obstacle03 returning to (7,6) is explicitly fatal, even if (8,6) exists.
             if(o.failOnReturnHit && playerCell==o.home && (!o.toOther || o.wait>0)) { Fail(); return; }
             Vector2Int direction=o.toOther ? o.other-o.home : o.home-o.other;
@@ -330,3 +335,4 @@ namespace ThatGameJam.LevelOne
         }
     }
 }
+
