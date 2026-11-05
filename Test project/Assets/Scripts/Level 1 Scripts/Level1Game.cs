@@ -61,12 +61,21 @@ namespace ThatGameJam.LevelOne
         [Tooltip("Independent looping layers; disable for one-shot playback.")]
         public bool loopAudio = true;
 
+        [Header("Cat Visual")]
+        public Transform catFacingRoot;
+        public Animator catAnimator;
+        public string catJumpState = "Base Layer.Take 001";
+        public float catYawOffset;
+
         public bool Playing { get; private set; }
         public bool Paused => ui && ui.BlocksGameplay;
         public int Count { get; private set; }
         Vector2Int playerCell, target;
         Vector3 playerOffset, moveStart, moveEnd;
         Quaternion startRotation;
+        Quaternion catStartLocalRotation;
+        bool catFacingReady, catAnimationReady;
+        int catJumpHash;
         Vector3 goalOffset;
         Renderer[] goalRenderers;
         Material[][] goalOriginals;
@@ -89,6 +98,7 @@ namespace ThatGameJam.LevelOne
             if (!ui.ValidateReferences()) return;
             playerOffset = Vector3.up * (player.position.y - grid.Position(startCell).y);
             startRotation = player.rotation;
+            InitializeCatVisual();
             goalOffset = Vector3.up * (goal.position.y - grid.Position(goalCell).y);
             PrepareBody(player);
             foreach (var n in notes)
@@ -157,6 +167,8 @@ namespace ThatGameJam.LevelOne
             Playing = play; Count = 0; moving = false; jumping = false;
             playerCell = startCell; player.position = grid.Position(startCell) + playerOffset;
             player.rotation = startRotation;
+            if (catFacingReady && catFacingRoot) catFacingRoot.localRotation = catStartLocalRotation;
+            SampleCatJump(0f);
             goal.position = grid.Position(goalCell) + goalOffset;
             goal.gameObject.SetActive(false);
             for(int r=0; r<goalRenderers.Length; r++)
@@ -225,18 +237,72 @@ namespace ThatGameJam.LevelOne
 #endif
             return Vector2Int.zero;
         }
+        void InitializeCatVisual()
+        {
+            if (!catFacingRoot && !catAnimator) return;
+            if (!catFacingRoot || catFacingRoot == player || !catFacingRoot.IsChildOf(player))
+            {
+                Debug.LogWarning("[Level1] Cat Facing Root must be a visual child of Player.", this);
+                return;
+            }
+
+            catStartLocalRotation = catFacingRoot.localRotation;
+            catFacingReady = true;
+            if (!catAnimator || catAnimator.transform == catFacingRoot ||
+                !catAnimator.transform.IsChildOf(catFacingRoot) ||
+                !catAnimator.isActiveAndEnabled || !catAnimator.runtimeAnimatorController)
+            {
+                Debug.LogWarning("[Level1] Assign the enabled Animator on the cat model under Cat Facing Root.", this);
+                return;
+            }
+
+            catJumpHash = Animator.StringToHash(catJumpState);
+            if (!catAnimator.HasState(0, catJumpHash))
+            {
+                Debug.LogWarning("[Level1] Cat jump state not found on layer 0: " + catJumpState, this);
+                return;
+            }
+
+            catAnimator.applyRootMotion = false;
+            catAnimator.speed = 0f;
+            catAnimationReady = true;
+        }
+
+        void FaceCat(Vector3 direction)
+        {
+            if (!catFacingReady || !catFacingRoot) return;
+            direction.y = 0f;
+            if (direction.sqrMagnitude < .0001f) return;
+            catFacingRoot.rotation = Quaternion.LookRotation(direction, Vector3.up) *
+                Quaternion.Euler(0f, catYawOffset, 0f);
+        }
+
+        void SampleCatJump(float progress)
+        {
+            if (!catAnimationReady || !catAnimator || !catAnimator.isActiveAndEnabled) return;
+            // Follow the same clock as the board jump and hold the last pose on landing.
+            catAnimator.Play(catJumpHash, 0, Mathf.Min(progress, .9999f));
+            catAnimator.Update(0f);
+        }
+
         void BeginMove(Vector2Int cell,bool jump)
         {
             grid.ClearPlayerTileHighlight();
             target=cell; moving=true; jumping=jump; moveTime=0;
             moveDuration=jump ? jumpSeconds : pushSeconds;
             moveStart=player.position; moveEnd=grid.Position(cell)+playerOffset;
+            if (jump)
+            {
+                FaceCat(moveEnd - moveStart);
+                SampleCatJump(0f);
+            }
         }
         void AdvancePlayer(float dt)
         {
             moveTime+=dt;
             float t=Mathf.Clamp01(moveTime/Mathf.Max(.01f,moveDuration));
             player.position=Vector3.Lerp(moveStart,moveEnd,t)+Vector3.up*(jumping ? Mathf.Sin(t*Mathf.PI)*jumpHeight : 0);
+            if (jumping) SampleCatJump(t);
             if(t<1) return;
             player.position=moveEnd; playerCell=target; moving=false; jumping=false;
             grid.HighlightPlayerTile(playerCell);
@@ -340,5 +406,6 @@ namespace ThatGameJam.LevelOne
         }
     }
 }
+
 
 

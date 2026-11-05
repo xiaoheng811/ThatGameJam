@@ -6,6 +6,7 @@ namespace ThatGameJam.LevelOne
     public sealed class Level1UI : MonoBehaviour
     {
         public GameObject buttonGroup, gameplayHUD, settingPanel2, pausePanel, endingPanel, quitPanel;
+        public GameObject gameTitle;
         public UnityEngine.UI.Button playButton, settingsButton2, settingsCloseButton;
         public UnityEngine.UI.Button pauseButton, restartButton, resumeButton, pauseCloseButton;
         public UnityEngine.UI.Button pauseMainButton, endingMainButton, playagainButton, yesButton, noButton;
@@ -72,7 +73,9 @@ namespace ThatGameJam.LevelOne
         {
             settingPanel2.SetActive(false); pausePanel.SetActive(false);
             endingPanel.SetActive(false); quitPanel.SetActive(false);
-            buttonGroup.SetActive(!playing); gameplayHUD.SetActive(playing);
+            buttonGroup.SetActive(!playing);
+            if (gameTitle) gameTitle.SetActive(!playing);
+            gameplayHUD.SetActive(playing);
             for(int i=0;i<3;i++) volumeSliders[i].SetValueWithoutNotify(1);
         }
         public void Refresh(int count,Level1Game.Note[] notes)
@@ -103,3 +106,4 @@ namespace ThatGameJam.LevelOne
         }
     }
 }
+
