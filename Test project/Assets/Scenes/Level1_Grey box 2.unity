@@ -3692,6 +3692,10 @@ MonoBehaviour:
   tile46: {fileID: 1205685241}
   blockedCells:
   - {x: 6, y: 1}
+  highlightPlayerTile: 1
+  playerTileMaterial: {fileID: 2100000, guid: bac7525d1e9d7034cbfd99f1e5d794ef, type: 2}
+  playerTileColor: {r: 0.28, g: 0.92, b: 0.82, a: 1}
+  playerTileTintStrength: 0.8
 --- !u!4 &787352231
 Transform:
   m_ObjectHideFlags: 0

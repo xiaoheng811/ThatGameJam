@@ -176,6 +176,8 @@ namespace ThatGameJam.LevelOne
                 o.model.position=grid.Position(o.home)+o.offset;
                 if (o.jelly) o.jelly.ResetWobble();
             }
+            if (play) grid.HighlightPlayerTile(playerCell);
+            else grid.ClearPlayerTileHighlight();
             ui.ResetView(play);
             RefreshUI();
         }
@@ -225,6 +227,7 @@ namespace ThatGameJam.LevelOne
         }
         void BeginMove(Vector2Int cell,bool jump)
         {
+            grid.ClearPlayerTileHighlight();
             target=cell; moving=true; jumping=jump; moveTime=0;
             moveDuration=jump ? jumpSeconds : pushSeconds;
             moveStart=player.position; moveEnd=grid.Position(cell)+playerOffset;
@@ -236,6 +239,7 @@ namespace ThatGameJam.LevelOne
             player.position=Vector3.Lerp(moveStart,moveEnd,t)+Vector3.up*(jumping ? Mathf.Sin(t*Mathf.PI)*jumpHeight : 0);
             if(t<1) return;
             player.position=moveEnd; playerCell=target; moving=false; jumping=false;
+            grid.HighlightPlayerTile(playerCell);
             // Landing on an occupied tile is resolved before collecting/winning.
             foreach(var o in obstacles)
                 if(Near(o.model.position,player.position)) { Hit(o); return; }
@@ -329,10 +333,12 @@ namespace ThatGameJam.LevelOne
         { if(ready && index>=0 && index<notes.Length && notes[index].collected) notes[index].source.volume=Mathf.Clamp01(volume); }
         void OnDestroy()
         {
+            if (grid) grid.ClearPlayerTileHighlight();
             foreach(var n in notes) if(n!=null && n.fading!=null)
                 foreach(var list in n.fading) foreach(var mat in list) if(mat) Destroy(mat);
             if(yellowGoal) Destroy(yellowGoal);
         }
     }
 }
+
 
