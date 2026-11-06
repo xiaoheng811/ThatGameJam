@@ -37,10 +37,10 @@ namespace ThatGameJam.LevelOne
         {
             bool ok=buttonGroup && gameplayHUD && settingPanel2 && pausePanel && endingPanel && quitPanel &&
                 playButton && settingsButton2 && settingsCloseButton && pauseButton && restartButton &&
-                pauseCloseButton && (playagainButton || nextLevelButton) && yesButton && noButton && fragmentCounterText;
+                pauseCloseButton && (playagainButton || nextLevelButton) && yesButton && noButton;
             if (!ok)
             {
-                Debug.LogError("[Level1UI] A required panel, button, or Fragment Counter Text is missing.", this);
+                Debug.LogError("[Level1UI] A required panel or button is missing.", this);
                 return false;
             }
             if (fragmentIcons.Length != noteCount || volumeSliders.Length != noteCount)
@@ -121,7 +121,7 @@ namespace ThatGameJam.LevelOne
         }
         public void Refresh(int count,Level1Game.Note[] notes)
         {
-            fragmentCounterText.text = $"{count}/{notes.Length}";
+            if (fragmentCounterText) fragmentCounterText.text = $"{count}/{notes.Length}";
             for (int i = 0; i < notes.Length; i++)
             {
                 bool unlocked=notes[i].collected;
@@ -187,6 +187,7 @@ namespace ThatGameJam.LevelOne
         }
     }
 }
+
 
 
 
