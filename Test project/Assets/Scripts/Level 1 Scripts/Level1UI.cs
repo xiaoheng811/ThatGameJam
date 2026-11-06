@@ -50,9 +50,15 @@ namespace ThatGameJam.LevelOne
             }
             for (int i = 0; i < noteCount; i++)
             {
-                if (fragmentIcons[i] && volumeSliders[i]) continue;
-                Debug.LogError($"[Level1UI] Assign the icon and slider at Element {i}.", this);
-                return false;
+                if (!fragmentIcons[i] || !volumeSliders[i])
+                {
+                    Debug.LogError($"[Level1UI] Assign the icon and slider at Element {i}.", this);
+                    return false;
+                }
+                if (!fragmentIcons[i].transform.IsChildOf(gameplayHUD.transform))
+                    Debug.LogWarning($"[Level1UI] Fragment Icons Element {i} is outside the assigned Gameplay HUD. Bind the icon in {gameplayHUD.name}.", this);
+                if (!volumeSliders[i].transform.IsChildOf(settingPanel2.transform))
+                    Debug.LogWarning($"[Level1UI] Volume Sliders Element {i} is outside the assigned Setting Panel2. Bind the slider in {settingPanel2.name}.", this);
             }
             return true;
         }
@@ -187,6 +193,7 @@ namespace ThatGameJam.LevelOne
         }
     }
 }
+
 
 
 

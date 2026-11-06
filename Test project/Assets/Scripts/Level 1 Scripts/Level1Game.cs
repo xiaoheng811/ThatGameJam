@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -103,6 +104,7 @@ namespace ThatGameJam.LevelOne
             if (notes == null || notes.Length == 0) { Bad("Assign at least one note."); return; }
             if (obstacles.Length != 3) { Bad("Exactly 3 obstacles required."); return; }
             if (!grid.Has(startCell) || !grid.Has(goalCell)) { Bad("Start or goal tile is missing."); return; }
+            var noteModels = new HashSet<Transform>();
             for (int i = 0; i < notes.Length; i++)
             {
                 var note = notes[i];
@@ -111,16 +113,37 @@ namespace ThatGameJam.LevelOne
                     Bad($"Notes Element {i}: assign Model and Clip.");
                     return;
                 }
+                if (!noteModels.Add(note.model))
+                {
+                    Bad($"Notes Element {i}: Model '{note.model.name}' is already assigned to another note.");
+                    return;
+                }
                 if (!grid.Has(note.cell))
                 {
                     Bad($"Notes Element {i}: tile {note.cell} is missing or blocked.");
                     return;
                 }
             }
-            foreach (var o in obstacles)
-                if (o == null || !o.model || !grid.Has(o.home) || !grid.Has(o.other) ||
-                    Mathf.Abs(o.home.x-o.other.x)+Mathf.Abs(o.home.y-o.other.y) != 1)
-                { Bad("Obstacle needs a model and two adjacent existing tiles."); return; }
+            for (int i = 0; i < obstacles.Length; i++)
+            {
+                var obstacle = obstacles[i];
+                if (obstacle == null || !obstacle.model)
+                {
+                    Bad($"Obstacles Element {i}: assign Model.");
+                    return;
+                }
+                if (!grid.Has(obstacle.home) || !grid.Has(obstacle.other))
+                {
+                    Bad($"Obstacles Element {i} ({obstacle.model.name}): Home {obstacle.home} and Other {obstacle.other} must be walkable tiles.");
+                    return;
+                }
+                Vector2Int distance = obstacle.other - obstacle.home;
+                if (Mathf.Abs(distance.x) + Mathf.Abs(distance.y) != 1)
+                {
+                    Bad($"Obstacles Element {i} ({obstacle.model.name}): Home {obstacle.home} and Other {obstacle.other} must be adjacent horizontally or vertically.");
+                    return;
+                }
+            }
             if (!ui.ValidateReferences(notes.Length)) return;
             playerOffset = Vector3.up * (player.position.y - grid.Position(startCell).y);
             startRotation = player.rotation;
@@ -453,6 +476,7 @@ namespace ThatGameJam.LevelOne
         }
     }
 }
+
 
 
 
