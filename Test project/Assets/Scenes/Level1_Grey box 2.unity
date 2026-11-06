@@ -14784,39 +14784,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6890654469702790111, guid: 6a9fdca2dc888e04ab9c490a6e34441e, type: 3}
   m_PrefabInstance: {fileID: 651143344}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &651143362 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 650452604414674719, guid: 6a9fdca2dc888e04ab9c490a6e34441e, type: 3}
-  m_PrefabInstance: {fileID: 651143344}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
---- !u!114 &651143363 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5535854953010924619, guid: 6a9fdca2dc888e04ab9c490a6e34441e, type: 3}
-  m_PrefabInstance: {fileID: 651143344}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
---- !u!114 &651143364 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 875683771038083698, guid: 6a9fdca2dc888e04ab9c490a6e34441e, type: 3}
-  m_PrefabInstance: {fileID: 651143344}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!114 &651143366 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6164411061802891213, guid: 6a9fdca2dc888e04ab9c490a6e34441e, type: 3}
@@ -16876,9 +16843,9 @@ MonoBehaviour:
   nextSceneName: Level1_Grey box 3
   fragmentCounterText: {fileID: 0}
   fragmentIcons:
-  - {fileID: 651143364}
-  - {fileID: 651143363}
-  - {fileID: 651143362}
+  - {fileID: 2007589988}
+  - {fileID: 738225719}
+  - {fileID: 275478257}
   - {fileID: 1910342575}
   volumeSliders:
   - {fileID: 2018554688}
@@ -16923,16 +16890,16 @@ MonoBehaviour:
   obstacles:
   - model: {fileID: 1191813354}
     home: {x: 2, y: 5}
-    other: {x: 3, y: 5}
+    other: {x: 2, y: 4}
     failOnReturnHit: 0
   - model: {fileID: 1653466360}
     home: {x: 5, y: 1}
-    other: {x: 5, y: 2}
+    other: {x: 4, y: 1}
     failOnReturnHit: 0
   - model: {fileID: 717868701}
-    home: {x: 6, y: 6}
-    other: {x: 6, y: 5}
-    failOnReturnHit: 1
+    home: {x: 5, y: 6}
+    other: {x: 6, y: 6}
+    failOnReturnHit: 0
   jumpSeconds: 0.35
   jumpHeight: 0.6
   obstacleTravelSeconds: 1.3
@@ -16967,8 +16934,7 @@ MonoBehaviour:
   tile44: {fileID: 1182508626}
   tile54: {fileID: 706203061}
   tile46: {fileID: 1205685241}
-  blockedCells:
-  - {x: 6, y: 1}
+  blockedCells: []
   highlightPlayerTile: 1
   playerTileMaterial: {fileID: 2100000, guid: bac7525d1e9d7034cbfd99f1e5d794ef, type: 2}
   playerTileColor: {r: 0.28, g: 0.92, b: 0.82, a: 1}
@@ -20149,7 +20115,7 @@ Transform:
   m_GameObject: {fileID: 976025537}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.45, y: 0.5, z: 3.27}
+  m_LocalPosition: {x: 2.16, y: 0.5, z: 5.79}
   m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children:
