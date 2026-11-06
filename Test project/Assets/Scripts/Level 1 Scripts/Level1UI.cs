@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ThatGameJam.LevelOne
 {
@@ -13,6 +14,10 @@ namespace ThatGameJam.LevelOne
         public UnityEngine.UI.Button playButton, settingsButton2, settingsCloseButton;
         public UnityEngine.UI.Button pauseButton, restartButton, resumeButton, pauseCloseButton;
         public UnityEngine.UI.Button pauseMainButton, endingMainButton, playagainButton, yesButton, noButton;
+        [Header("Next Level")]
+        public UnityEngine.UI.Button nextLevelButton;
+        public string nextSceneName;
+
         public TMP_Text fragmentCounterText;
         public UnityEngine.UI.Graphic[] fragmentIcons = new UnityEngine.UI.Graphic[3];
         public UnityEngine.UI.Slider[] volumeSliders = new UnityEngine.UI.Slider[3];
@@ -20,6 +25,7 @@ namespace ThatGameJam.LevelOne
         public Color lockedColor = new Color(.8f,.8f,.8f,1);
         Level1Game game;
         bool quitPending;
+        bool nextLevelPending;
         Color[] iconDefaults;
         Color[][] sliderDefaults;
         UnityEngine.UI.Graphic[][] sliderGraphics;
@@ -27,22 +33,37 @@ namespace ThatGameJam.LevelOne
         public bool AudioPaused => Visible(pausePanel) || Visible(quitPanel);
         static bool Visible(GameObject o) => o && o.activeInHierarchy;
 
-        public bool ValidateReferences()
+        public bool ValidateReferences(int noteCount)
         {
             bool ok=buttonGroup && gameplayHUD && settingPanel2 && pausePanel && endingPanel && quitPanel &&
                 playButton && settingsButton2 && settingsCloseButton && pauseButton && restartButton &&
-                pauseCloseButton && playagainButton && yesButton && noButton && fragmentCounterText &&
-                fragmentIcons.Length==3 && volumeSliders.Length==3;
-            if(ok) for(int i=0;i<3;i++) ok &= fragmentIcons[i] && volumeSliders[i];
-            if(!ok) Debug.LogError("[Level1UI] Assign every required UI field and three icons/sliders. Resume/Main buttons are optional.",this);
-            return ok;
+                pauseCloseButton && (playagainButton || nextLevelButton) && yesButton && noButton && fragmentCounterText;
+            if (!ok)
+            {
+                Debug.LogError("[Level1UI] A required panel, button, or Fragment Counter Text is missing.", this);
+                return false;
+            }
+            if (fragmentIcons.Length != noteCount || volumeSliders.Length != noteCount)
+            {
+                Debug.LogError($"[Level1UI] Set Fragment Icons and Volume Sliders Size to {noteCount}.", this);
+                return false;
+            }
+            for (int i = 0; i < noteCount; i++)
+            {
+                if (fragmentIcons[i] && volumeSliders[i]) continue;
+                Debug.LogError($"[Level1UI] Assign the icon and slider at Element {i}.", this);
+                return false;
+            }
+            return true;
         }
         public void Bind(Level1Game owner)
         {
             game=owner;
-            iconDefaults=new Color[3]; sliderDefaults=new Color[3][];
-            sliderGraphics=new UnityEngine.UI.Graphic[3][];
-            for(int i=0;i<3;i++)
+            int noteCount = fragmentIcons.Length;
+            iconDefaults = new Color[noteCount];
+            sliderDefaults = new Color[noteCount][];
+            sliderGraphics = new UnityEngine.UI.Graphic[noteCount][];
+            for (int i = 0; i < noteCount; i++)
             {
                 iconDefaults[i]=fragmentIcons[i].color;
                 sliderGraphics[i]=volumeSliders[i].GetComponentsInChildren<UnityEngine.UI.Graphic>(true);
@@ -64,6 +85,7 @@ namespace ThatGameJam.LevelOne
             Wire(pauseMainButton,game.MainMenu);
             Wire(endingMainButton,game.MainMenu);
             Wire(playagainButton,game.Restart);
+            Wire(nextLevelButton, LoadNextLevel);
             Wire(yesButton, Quit);
             // NoButton uses the Inspector events to restore the main menu.
 
@@ -72,7 +94,7 @@ namespace ThatGameJam.LevelOne
             var canvas = buttonGroup.GetComponentInParent<Canvas>(true);
             if (canvas)
                 foreach (var button in canvas.GetComponentsInChildren<UnityEngine.UI.Button>(true))
-                    if (button != yesButton)
+                    if (button != yesButton && button != nextLevelButton)
                         button.onClick.AddListener(game.PlaySelectSound);
         }
         static void Wire(UnityEngine.UI.Button button,UnityEngine.Events.UnityAction action)
@@ -95,12 +117,12 @@ namespace ThatGameJam.LevelOne
                 else if (!menuMusic.isPlaying)
                     menuMusic.Play();
             }
-            for(int i=0;i<3;i++) volumeSliders[i].SetValueWithoutNotify(1);
+            foreach (var slider in volumeSliders) slider.SetValueWithoutNotify(1);
         }
         public void Refresh(int count,Level1Game.Note[] notes)
         {
-            fragmentCounterText.text=count+"/3";
-            for(int i=0;i<3;i++)
+            fragmentCounterText.text = $"{count}/{notes.Length}";
+            for (int i = 0; i < notes.Length; i++)
             {
                 bool unlocked=notes[i].collected;
                 fragmentIcons[i].color=unlocked ? collectedColor : iconDefaults[i];
@@ -115,6 +137,28 @@ namespace ThatGameJam.LevelOne
             pausePanel.SetActive(false); settingPanel2.SetActive(false);
             endingPanel.SetActive(true);
         }
+        void LoadNextLevel()
+        {
+            if (nextLevelPending) return;
+            string sceneName = (nextSceneName ?? string.Empty).Trim();
+            if (string.IsNullOrEmpty(sceneName) || !Application.CanStreamedLevelBeLoaded(sceneName))
+            {
+                Debug.LogError("[Level1UI] Set Next Scene Name and enable it in the Build Profiles Scene List: " + sceneName, this);
+                return;
+            }
+
+            nextLevelPending = true;
+            game.PlaySelectSound();
+            StartCoroutine(LoadAfterSelect(sceneName, game.SelectSoundDuration));
+        }
+
+        IEnumerator LoadAfterSelect(string sceneName, float delay)
+        {
+            if (delay > 0f)
+                yield return new WaitForSecondsRealtime(delay);
+            SceneManager.LoadScene(sceneName);
+        }
+
         public void Quit()
         {
             if (quitPending) return;
@@ -143,6 +187,8 @@ namespace ThatGameJam.LevelOne
         }
     }
 }
+
+
 
 
 

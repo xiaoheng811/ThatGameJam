@@ -40,6 +40,8 @@ namespace ThatGameJam.LevelOne
         public Transform player;
         public Transform goal;
         public Shader fadeShader;
+        [Tooltip("Begin playing as soon as this scene loads.")]
+        public bool startInGameplay;
         public Vector2Int startCell = new Vector2Int(4, 4);
         public Vector2Int goalCell = new Vector2Int(5, 4);
         public Note[] notes = {
@@ -98,15 +100,28 @@ namespace ThatGameJam.LevelOne
         {
             if (!grid || !ui || !player || !goal || !fadeShader) { Bad("Missing Grid/UI/Player/Goal/Fade Shader reference."); return; }
             if (!grid.Build()) return;
-            if (notes.Length != 3 || obstacles.Length != 3) { Bad("Exactly 3 notes and 3 obstacles required."); return; }
+            if (notes == null || notes.Length == 0) { Bad("Assign at least one note."); return; }
+            if (obstacles.Length != 3) { Bad("Exactly 3 obstacles required."); return; }
             if (!grid.Has(startCell) || !grid.Has(goalCell)) { Bad("Start or goal tile is missing."); return; }
-            foreach (var n in notes)
-                if (n == null || !n.model || !n.clip || !grid.Has(n.cell)) { Bad("Missing note object/audio/tile."); return; }
+            for (int i = 0; i < notes.Length; i++)
+            {
+                var note = notes[i];
+                if (note == null || !note.model || !note.clip)
+                {
+                    Bad($"Notes Element {i}: assign Model and Clip.");
+                    return;
+                }
+                if (!grid.Has(note.cell))
+                {
+                    Bad($"Notes Element {i}: tile {note.cell} is missing or blocked.");
+                    return;
+                }
+            }
             foreach (var o in obstacles)
                 if (o == null || !o.model || !grid.Has(o.home) || !grid.Has(o.other) ||
                     Mathf.Abs(o.home.x-o.other.x)+Mathf.Abs(o.home.y-o.other.y) != 1)
                 { Bad("Obstacle needs a model and two adjacent existing tiles."); return; }
-            if (!ui.ValidateReferences()) return;
+            if (!ui.ValidateReferences(notes.Length)) return;
             playerOffset = Vector3.up * (player.position.y - grid.Position(startCell).y);
             startRotation = player.rotation;
             InitializeCatVisual();
@@ -166,7 +181,7 @@ namespace ThatGameJam.LevelOne
                 effectsSource.spatialBlend = 0f;
             }
             ui.Bind(this);
-            ResetLevel(false);
+            ResetLevel(startInGameplay);
         }
         void Bad(string message) { Debug.LogError("[Level1] " + message, this); enabled = false; }
         static void PrepareBody(Transform root)
@@ -393,12 +408,13 @@ namespace ThatGameJam.LevelOne
                 if(n.collected || n.cell!=playerCell) continue;
                 n.collected=true; Count++;
                 n.source.Play();
-                PlaySoundEffect(Count == 3 ? threeNotesSound : collectSound);
+                PlaySoundEffect(Count == notes.Length ? threeNotesSound : collectSound);
                 StartCoroutine(Fade(n));
             }
-            if(Count==3) goal.gameObject.SetActive(true);
+            bool allCollected = Count == notes.Length;
+            if (allCollected) goal.gameObject.SetActive(true);
             RefreshUI();
-            if(Count==3 && playerCell==goalCell)
+            if (allCollected && playerCell == goalCell)
             {
                 foreach(var r in goalRenderers)
                 {
@@ -437,6 +453,8 @@ namespace ThatGameJam.LevelOne
         }
     }
 }
+
+
 
 
 
