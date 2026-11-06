@@ -61,6 +61,17 @@ namespace ThatGameJam.LevelOne
         [Tooltip("Independent looping layers; disable for one-shot playback.")]
         public bool loopAudio = true;
 
+        [Header("Sound Effects")]
+        public AudioClip jumpSound;
+        public AudioClip collectSound;
+        public AudioClip threeNotesSound;
+        public AudioClip bounceSound;
+        public AudioClip congratulationsSound;
+        public AudioClip selectSound;
+        [Range(0f, 1f)] public float soundEffectsVolume = .7f;
+
+        AudioSource effectsSource;
+
         [Header("Cat Visual")]
         public Transform catFacingRoot;
         public Animator catAnimator;
@@ -148,6 +159,12 @@ namespace ThatGameJam.LevelOne
             yellowGoal = new Material(fadeShader);
             yellowGoal.SetColor("_BaseColor",Color.yellow);
             ready = true;
+            if (jumpSound || collectSound || threeNotesSound || bounceSound || congratulationsSound || selectSound)
+            {
+                effectsSource = gameObject.AddComponent<AudioSource>();
+                effectsSource.playOnAwake = false;
+                effectsSource.spatialBlend = 0f;
+            }
             ui.Bind(this);
             ResetLevel(false);
         }
@@ -285,12 +302,24 @@ namespace ThatGameJam.LevelOne
             catAnimator.Update(0f);
         }
 
+        void PlaySoundEffect(AudioClip clip)
+        {
+            if (effectsSource && clip)
+                effectsSource.PlayOneShot(clip, soundEffectsVolume);
+        }
+
+        public void PlaySelectSound() => PlaySoundEffect(selectSound);
+
+        public float SelectSoundDuration =>
+            effectsSource && selectSound && soundEffectsVolume > 0f ? selectSound.length : 0f;
+
         void BeginMove(Vector2Int cell,bool jump)
         {
             grid.ClearPlayerTileHighlight();
             target=cell; moving=true; jumping=jump; moveTime=0;
             moveDuration=jump ? jumpSeconds : pushSeconds;
             moveStart=player.position; moveEnd=grid.Position(cell)+playerOffset;
+            PlaySoundEffect(jump ? jumpSound : bounceSound);
             if (jump)
             {
                 FaceCat(moveEnd - moveStart);
@@ -364,6 +393,7 @@ namespace ThatGameJam.LevelOne
                 if(n.collected || n.cell!=playerCell) continue;
                 n.collected=true; Count++;
                 n.source.Play();
+                PlaySoundEffect(Count == 3 ? threeNotesSound : collectSound);
                 StartCoroutine(Fade(n));
             }
             if(Count==3) goal.gameObject.SetActive(true);
@@ -379,6 +409,7 @@ namespace ThatGameJam.LevelOne
                 Playing=false;
                 // No Time.timeScale changes and no AudioSource.Stop: music keeps playing.
                 ui.ShowWin();
+                PlaySoundEffect(congratulationsSound);
             }
         }
         IEnumerator Fade(Note n)
@@ -406,6 +437,7 @@ namespace ThatGameJam.LevelOne
         }
     }
 }
+
 
 
 

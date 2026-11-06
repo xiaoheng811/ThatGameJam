@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -7,6 +8,8 @@ namespace ThatGameJam.LevelOne
     {
         public GameObject buttonGroup, gameplayHUD, settingPanel2, pausePanel, endingPanel, quitPanel;
         public GameObject gameTitle;
+        [Tooltip("The Audio Source used only on the main menu.")]
+        public AudioSource menuMusic;
         public UnityEngine.UI.Button playButton, settingsButton2, settingsCloseButton;
         public UnityEngine.UI.Button pauseButton, restartButton, resumeButton, pauseCloseButton;
         public UnityEngine.UI.Button pauseMainButton, endingMainButton, playagainButton, yesButton, noButton;
@@ -16,6 +19,7 @@ namespace ThatGameJam.LevelOne
         public Color collectedColor = new Color(.15f,.85f,.75f,1);
         public Color lockedColor = new Color(.8f,.8f,.8f,1);
         Level1Game game;
+        bool quitPending;
         Color[] iconDefaults;
         Color[][] sliderDefaults;
         UnityEngine.UI.Graphic[][] sliderGraphics;
@@ -60,8 +64,16 @@ namespace ThatGameJam.LevelOne
             Wire(pauseMainButton,game.MainMenu);
             Wire(endingMainButton,game.MainMenu);
             Wire(playagainButton,game.Restart);
-            Wire(yesButton,Quit);
-            Wire(noButton,()=>quitPanel.SetActive(false));
+            Wire(yesButton, Quit);
+            // NoButton uses the Inspector events to restore the main menu.
+
+            // Hook up every Button in the bound Canvas, including inactive panels.
+            // Quit handles its own click sound so it can wait before exiting.
+            var canvas = buttonGroup.GetComponentInParent<Canvas>(true);
+            if (canvas)
+                foreach (var button in canvas.GetComponentsInChildren<UnityEngine.UI.Button>(true))
+                    if (button != yesButton)
+                        button.onClick.AddListener(game.PlaySelectSound);
         }
         static void Wire(UnityEngine.UI.Button button,UnityEngine.Events.UnityAction action)
         {
@@ -76,6 +88,13 @@ namespace ThatGameJam.LevelOne
             buttonGroup.SetActive(!playing);
             if (gameTitle) gameTitle.SetActive(!playing);
             gameplayHUD.SetActive(playing);
+            if (menuMusic)
+            {
+                if (playing)
+                    menuMusic.Stop();
+                else if (!menuMusic.isPlaying)
+                    menuMusic.Play();
+            }
             for(int i=0;i<3;i++) volumeSliders[i].SetValueWithoutNotify(1);
         }
         public void Refresh(int count,Level1Game.Note[] notes)
@@ -98,6 +117,24 @@ namespace ThatGameJam.LevelOne
         }
         public void Quit()
         {
+            if (quitPending) return;
+            quitPending = true;
+            float delay = game ? game.SelectSoundDuration : 0f;
+            if (game) game.PlaySelectSound();
+            if (delay > 0f)
+                StartCoroutine(QuitAfterSound(delay));
+            else
+                ExitGame();
+        }
+
+        IEnumerator QuitAfterSound(float delay)
+        {
+            yield return new WaitForSecondsRealtime(delay);
+            ExitGame();
+        }
+
+        static void ExitGame()
+        {
 #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying=false;
 #else
@@ -106,4 +143,7 @@ namespace ThatGameJam.LevelOne
         }
     }
 }
+
+
+
 
