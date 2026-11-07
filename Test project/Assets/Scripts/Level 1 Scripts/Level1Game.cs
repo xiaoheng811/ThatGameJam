@@ -204,7 +204,8 @@ namespace ThatGameJam.LevelOne
                 effectsSource.spatialBlend = 0f;
             }
             ui.Bind(this);
-            ResetLevel(startInGameplay);
+            ResetLevel(ui.PlayIntroOnSceneEntry ? false : startInGameplay);
+            ui.ShowSceneEntryIntroduction();
         }
         void Bad(string message) { Debug.LogError("[Level1] " + message, this); enabled = false; }
         static void PrepareBody(Transform root)

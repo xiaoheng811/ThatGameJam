@@ -17,6 +17,9 @@ namespace ThatGameJam.LevelOne
         [Header("Next Level")]
         public UnityEngine.UI.Button nextLevelButton;
         public string nextSceneName;
+        private TMP_Text nextButtonLabel;
+        private string nextButtonOriginalText;
+        private Color nextButtonOriginalColor;
 
         public TMP_Text fragmentCounterText;
         public UnityEngine.UI.Graphic[] fragmentIcons = new UnityEngine.UI.Graphic[3];
@@ -28,8 +31,22 @@ namespace ThatGameJam.LevelOne
         [SerializeField] private GameObject newTutorialPanel;
         [SerializeField] private UnityEngine.UI.Button newTutorialCloseButton;
 
+        [Header("Season Title")]
+        [SerializeField] private UnityEngine.UI.Graphic seasonTitle;
+        [SerializeField] private Color seasonWinColor = new Color(.15f, .85f, .75f, 1f);
+        private Color seasonOriginalColor;
+
+        [Header("Play Introduction")]
+        [SerializeField] private UnityEngine.UI.Graphic introText;
+        [SerializeField, Min(0f)] private float introSeconds = 2f;
+        [SerializeField] private bool playIntroOnSceneEntry;
+        public bool PlayIntroOnSceneEntry => playIntroOnSceneEntry;
+        private Color introOriginalColor;
+        private Coroutine introRoutine;
+
         Level1Game game;
         bool quitPending;
+        bool restoreWinAfterSettings;
         bool nextLevelPending;
         Color[] iconDefaults;
         Color[][] sliderDefaults;
@@ -71,6 +88,18 @@ namespace ThatGameJam.LevelOne
         public void Bind(Level1Game owner)
         {
             game=owner;
+            if (nextLevelButton)
+            {
+                nextButtonLabel = nextLevelButton.GetComponentInChildren<TMP_Text>(true);
+                if (nextButtonLabel)
+                    nextButtonOriginalText = nextButtonLabel.text;
+                if (nextLevelButton.targetGraphic)
+                    nextButtonOriginalColor = nextLevelButton.targetGraphic.color;
+            }
+            if (introText)
+                introOriginalColor = introText.color;
+            if (seasonTitle)
+                seasonOriginalColor = seasonTitle.color;
             int noteCount = fragmentIcons.Length;
             iconDefaults = new Color[noteCount];
             sliderDefaults = new Color[noteCount][];
@@ -87,12 +116,12 @@ namespace ThatGameJam.LevelOne
                 volumeSliders[i].onValueChanged.AddListener(value=>game.SetVolume(index,value));
             }
             // Replace only these assigned buttons' events in memory. Prefab assets are untouched.
-            Wire(playButton,game.Play);
+            Wire(playButton,BeginPlayIntroduction);
             if (newTutorialPanel && newTutorialCloseButton)
-                Wire(newTutorialCloseButton, () => newTutorialPanel.SetActive(false));
-            Wire(settingsButton2,()=>settingPanel2.SetActive(true));
-            Wire(settingsCloseButton,()=>settingPanel2.SetActive(false));
-            Wire(pauseButton,()=>pausePanel.SetActive(true));
+                Wire(newTutorialCloseButton, CloseStartTutorial);
+            Wire(settingsButton2,OpenGameplaySettings);
+            Wire(settingsCloseButton,CloseGameplaySettings);
+            Wire(pauseButton,OpenGameplayPause);
             Wire(restartButton,game.Restart);
             Wire(resumeButton,()=>pausePanel.SetActive(false));
             Wire(pauseCloseButton,()=>pausePanel.SetActive(false));
@@ -117,13 +146,140 @@ namespace ThatGameJam.LevelOne
             button.onClick=new UnityEngine.UI.Button.ButtonClickedEvent();
             button.onClick.AddListener(action);
         }
+        public void ShowSceneEntryIntroduction()
+        {
+            if (playIntroOnSceneEntry)
+                BeginPlayIntroduction();
+        }
+
+        private void BeginPlayIntroduction()
+        {
+            if (introRoutine != null || game.Playing)
+                return;
+
+            if (!introText || introSeconds <= 0f)
+            {
+                game.Play();
+                return;
+            }
+
+            buttonGroup.SetActive(false);
+            if (gameTitle)
+                gameTitle.SetActive(false);
+            gameplayHUD.SetActive(false);
+            if (newTutorialPanel)
+                newTutorialPanel.SetActive(false);
+
+            introText.color = introOriginalColor;
+            introText.gameObject.SetActive(true);
+            if (menuMusic && !menuMusic.isPlaying)
+                menuMusic.Play();
+
+            introRoutine = StartCoroutine(FadeIntroduction());
+        }
+
+        private IEnumerator FadeIntroduction()
+        {
+            float duration = introSeconds;
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                yield return null;
+                elapsed += Time.unscaledDeltaTime;
+                Color color = introOriginalColor;
+                color.a *= 1f - Mathf.Clamp01(elapsed / duration);
+                introText.color = color;
+            }
+
+            introText.gameObject.SetActive(false);
+            introText.color = introOriginalColor;
+            introRoutine = null;
+            game.Play();
+        }
+
         public void ShowStartTutorial()
         {
             if (newTutorialPanel && newTutorialCloseButton)
+            {
+                pausePanel.SetActive(false);
+                settingPanel2.SetActive(false);
                 newTutorialPanel.SetActive(true);
+            }
+            RefreshHudButtons();
         }
+
+        private void CloseStartTutorial()
+        {
+            if (newTutorialPanel)
+                newTutorialPanel.SetActive(false);
+            RefreshHudButtons();
+        }
+
+        private void RefreshHudButtons()
+        {
+            bool tutorialOpen = Visible(newTutorialPanel);
+            if (pauseButton)
+                pauseButton.interactable = !tutorialOpen &&
+                    !Visible(settingPanel2) && !Visible(endingPanel);
+            if (settingsButton2)
+                settingsButton2.interactable = !tutorialOpen;
+        }
+
+        private void OpenGameplayPause()
+        {
+            if (Visible(newTutorialPanel) || Visible(settingPanel2) || Visible(endingPanel))
+                return;
+
+            pausePanel.SetActive(true);
+        }
+        private void OpenGameplaySettings()
+        {
+            if (Visible(newTutorialPanel) || Visible(settingPanel2))
+                return;
+
+            pausePanel.SetActive(false);
+            restoreWinAfterSettings = Visible(endingPanel);
+            if (restoreWinAfterSettings)
+                endingPanel.SetActive(false);
+
+            settingPanel2.SetActive(true);
+            RefreshHudButtons();
+        }
+
+        private void CloseGameplaySettings()
+        {
+            settingPanel2.SetActive(false);
+            bool restoreWin = restoreWinAfterSettings;
+            restoreWinAfterSettings = false;
+            if (restoreWin)
+                endingPanel.SetActive(true);
+            RefreshHudButtons();
+        }
+
         public void ResetView(bool playing)
         {
+            nextLevelPending = false;
+            if (nextLevelButton)
+            {
+                nextLevelButton.interactable = true;
+                if (nextButtonLabel)
+                    nextButtonLabel.text = nextButtonOriginalText;
+                if (nextLevelButton.targetGraphic)
+                    nextLevelButton.targetGraphic.color = nextButtonOriginalColor;
+            }
+            restoreWinAfterSettings = false;
+            if (introRoutine != null)
+            {
+                StopCoroutine(introRoutine);
+                introRoutine = null;
+            }
+            if (introText)
+            {
+                introText.gameObject.SetActive(false);
+                introText.color = introOriginalColor;
+            }
+            if (seasonTitle)
+                seasonTitle.color = seasonOriginalColor;
             if (newTutorialPanel)
                 newTutorialPanel.SetActive(false);
             settingPanel2.SetActive(false); pausePanel.SetActive(false);
@@ -139,9 +295,14 @@ namespace ThatGameJam.LevelOne
                     menuMusic.Play();
             }
             foreach (var slider in volumeSliders) slider.SetValueWithoutNotify(1);
+            RefreshHudButtons();
         }
         public void Refresh(int count,Level1Game.Note[] notes)
         {
+            if (seasonTitle)
+                seasonTitle.color = notes.Length > 0 && count == notes.Length
+                    ? seasonWinColor
+                    : seasonOriginalColor;
             if (fragmentCounterText) fragmentCounterText.text = $"{count}/{notes.Length}";
             for (int i = 0; i < notes.Length; i++)
             {
@@ -155,8 +316,12 @@ namespace ThatGameJam.LevelOne
         }
         public void ShowWin()
         {
+            restoreWinAfterSettings = false;
+            if (seasonTitle)
+                seasonTitle.color = seasonWinColor;
             pausePanel.SetActive(false); settingPanel2.SetActive(false);
             endingPanel.SetActive(true);
+            RefreshHudButtons();
         }
         void LoadNextLevel()
         {
@@ -169,15 +334,53 @@ namespace ThatGameJam.LevelOne
             }
 
             nextLevelPending = true;
+            if (nextLevelButton)
+            {
+                nextLevelButton.interactable = false;
+                if (nextButtonLabel)
+                    nextButtonLabel.text = "Loading...";
+                if (nextLevelButton.targetGraphic)
+                {
+                    Color dimmed = nextButtonOriginalColor;
+                    dimmed.r *= .5f;
+                    dimmed.g *= .5f;
+                    dimmed.b *= .5f;
+                    nextLevelButton.targetGraphic.color = dimmed;
+                }
+            }
             game.PlaySelectSound();
             StartCoroutine(LoadAfterSelect(sceneName, game.SelectSoundDuration));
         }
 
         IEnumerator LoadAfterSelect(string sceneName, float delay)
         {
-            if (delay > 0f)
-                yield return new WaitForSecondsRealtime(delay);
-            SceneManager.LoadScene(sceneName);
+            // Render the button feedback before beginning the scene load.
+            yield return null;
+            AsyncOperation loading = SceneManager.LoadSceneAsync(sceneName);
+            if (loading == null)
+            {
+                Debug.LogError("[Level1UI] Unable to load scene: " + sceneName, this);
+                nextLevelPending = false;
+                if (nextLevelButton)
+                {
+                    nextLevelButton.interactable = true;
+                    if (nextButtonLabel)
+                        nextButtonLabel.text = nextButtonOriginalText;
+                    if (nextLevelButton.targetGraphic)
+                        nextLevelButton.targetGraphic.color = nextButtonOriginalColor;
+                }
+                yield break;
+            }
+
+            loading.allowSceneActivation = false;
+            float elapsed = 0f;
+            while (loading.progress < .9f || elapsed < delay)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                yield return null;
+            }
+            loading.allowSceneActivation = true;
+            yield return loading;
         }
 
         public void Quit()
