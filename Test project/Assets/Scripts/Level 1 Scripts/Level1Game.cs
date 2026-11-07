@@ -212,7 +212,14 @@ namespace ThatGameJam.LevelOne
             foreach(var rb in root.GetComponentsInChildren<Rigidbody>(true))
             { rb.isKinematic = true; rb.useGravity = false; rb.detectCollisions = false; }
         }
-        public void Play() { if(ready) ResetLevel(true); }
+        public void Play()
+        {
+            if (!ready)
+                return;
+
+            ResetLevel(true);
+            ui.ShowStartTutorial();
+        }
         public void Restart() { if(ready) ResetLevel(true); }
         public void MainMenu() { if(ready) ResetLevel(false); }
 

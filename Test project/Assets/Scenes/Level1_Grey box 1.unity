@@ -10728,7 +10728,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 800, y: 600}
+  m_SizeDelta: {x: 1000, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &418848142
 MonoBehaviour:
@@ -10750,12 +10750,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'W A S D - Move
-
-    Collect music fragments.
-
-    Reach the end of the
-    maze.'
+  m_text: "W A S D - Move\nskipping one tile each time.\n\nCollect all music fragments
+    to reveal the exit\u2014\u2014 jump onto it to win!"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -10764,8 +10760,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4288716383
+  m_fontColor: {r: 0.372549, g: 0.6196079, b: 0.627451, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -17624,6 +17620,8 @@ MonoBehaviour:
   - {fileID: 651143356}
   collectedColor: {r: 0.15, g: 0.85, b: 0.75, a: 1}
   lockedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+  newTutorialPanel: {fileID: 2059146380}
+  newTutorialCloseButton: {fileID: 1172881005}
 --- !u!114 &787352229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24746,8 +24744,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4293318829
+  m_fontColor: {r: 0.6784314, g: 0.8470589, b: 0.9019608, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -36019,7 +36017,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2048819983
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36374,7 +36372,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2059146381
 RectTransform:
   m_ObjectHideFlags: 0

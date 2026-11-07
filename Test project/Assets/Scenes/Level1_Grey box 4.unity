@@ -17094,6 +17094,8 @@ MonoBehaviour:
   - {fileID: 1353121210}
   collectedColor: {r: 0.15, g: 0.85, b: 0.75, a: 1}
   lockedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
+  newTutorialPanel: {fileID: 0}
+  newTutorialCloseButton: {fileID: 0}
 --- !u!114 &787352229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17111,7 +17113,7 @@ MonoBehaviour:
   player: {fileID: 976025541}
   goal: {fileID: 36586782}
   fadeShader: {fileID: 4800000, guid: 36fd891a0a2ac3146b7bc939e58ee085, type: 3}
-  startInGameplay: 0
+  startInGameplay: 1
   startCell: {x: 3, y: 3}
   goalCell: {x: 3, y: 4}
   notes:
