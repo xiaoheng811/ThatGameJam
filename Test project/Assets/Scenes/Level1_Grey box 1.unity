@@ -18065,7 +18065,7 @@ MonoBehaviour:
   catFacingRoot: {fileID: 854129953}
   catAnimator: {fileID: 1517820264}
   catJumpState: Base Layer.Take 001
-  catYawOffset: 0
+  catYawOffset: 180
 --- !u!114 &787352230
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -17261,7 +17261,7 @@ MonoBehaviour:
   seasonWinColor: {r: 0.3882353, g: 0.83137256, b: 0.95686275, a: 1}
   introText: {fileID: 1673366296}
   introSeconds: 3.5
-  playIntroOnSceneEntry: 0
+  playIntroOnSceneEntry: 1
 --- !u!114 &787352229
 MonoBehaviour:
   m_ObjectHideFlags: 0
