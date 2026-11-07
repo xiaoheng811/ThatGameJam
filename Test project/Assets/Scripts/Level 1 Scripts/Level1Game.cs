@@ -61,7 +61,7 @@ namespace ThatGameJam.LevelOne
         [Min(0)] public float obstacleWaitSeconds = .5f;
         [Min(.01f)] public float pushSeconds = .16f;
         [Min(.01f)] public float fadeSeconds = .45f;
-        [Tooltip("Independent looping layers; disable for one-shot playback.")]
+        [Tooltip("Loop the synchronized music layers. Use stems exported from the same start and end points.")]
         public bool loopAudio = true;
 
         [Header("Sound Effects")]
@@ -74,6 +74,11 @@ namespace ThatGameJam.LevelOne
         [Range(0f, 1f)] public float soundEffectsVolume = .7f;
 
         AudioSource effectsSource;
+        bool noteLayersStarted;
+        bool noteLayersPaused;
+        double layerElapsedSeconds;
+        double layerScheduledDspTime;
+        const double LayerScheduleLeadSeconds = .15;
 
         [Header("Cat Visual")]
         public Transform catFacingRoot;
@@ -182,6 +187,10 @@ namespace ThatGameJam.LevelOne
                 n.source = audioObject.AddComponent<AudioSource>();
                 n.source.playOnAwake = false; n.source.loop = loopAudio;
                 n.source.spatialBlend = 0; n.source.clip = n.clip;
+                n.source.mute = true;
+                n.source.pitch = 1f;
+                n.source.dopplerLevel = 0f;
+                n.clip.LoadAudioData();
             }
             foreach (var o in obstacles)
             {
@@ -227,6 +236,10 @@ namespace ThatGameJam.LevelOne
         void ResetLevel(bool play)
         {
             StopAllCoroutines();
+            noteLayersStarted = false;
+            noteLayersPaused = false;
+            layerElapsedSeconds = 0d;
+            layerScheduledDspTime = 0d;
             Playing = play; Count = 0; moving = false; jumping = false;
             playerCell = startCell; player.position = grid.Position(startCell) + playerOffset;
             player.rotation = startRotation;
@@ -243,7 +256,9 @@ namespace ThatGameJam.LevelOne
                 n.model.localScale=n.originalScale;
                 for(int r=0; r<n.renderers.Length; r++) n.renderers[r].sharedMaterials=n.originals[r];
                 foreach(var list in n.fading) foreach(var mat in list) mat.SetFloat("_Fade",1);
-                n.source.Stop(); n.source.volume=1f;
+                n.source.Stop();
+                n.source.volume = 1f;
+                n.source.mute = true;
             }
             foreach(var o in obstacles)
             {
@@ -260,11 +275,7 @@ namespace ThatGameJam.LevelOne
         {
             if(!ready || !Playing) return;
             bool paused=Paused;
-            foreach(var n in notes)
-            {
-                if(!n.collected) continue;
-                if(ui.AudioPaused) n.source.Pause(); else n.source.UnPause();
-            }
+            UpdateNoteLayerPause(ui.AudioPaused);
             if(paused) return;
             float dt=Time.deltaTime;
             if(moving) AdvancePlayer(dt);
@@ -432,13 +443,64 @@ namespace ThatGameJam.LevelOne
             Debug.Log("[Level1] Player pushed out or crushed. Restarting.",this);
             ResetLevel(true);
         }
+        void StartNoteLayers()
+        {
+            if (noteLayersStarted)
+                return;
+
+            noteLayersStarted = true;
+            layerElapsedSeconds = 0d;
+            ScheduleNoteLayers();
+        }
+
+        void ScheduleNoteLayers()
+        {
+            // Use one DSP timestamp for all tracks, including the muted tracks.
+            layerScheduledDspTime = AudioSettings.dspTime + LayerScheduleLeadSeconds;
+            foreach (var note in notes)
+            {
+                note.source.Stop();
+                note.source.mute = !note.collected;
+                double duration = (double)note.clip.samples / note.clip.frequency;
+                if (duration <= 0d || (!loopAudio && layerElapsedSeconds >= duration))
+                    continue;
+
+                double position = loopAudio ? layerElapsedSeconds % duration : layerElapsedSeconds;
+                int sample = (int)Math.Min(note.clip.samples - 1,
+                    Math.Floor(position * note.clip.frequency));
+                note.source.timeSamples = sample;
+                note.source.PlayScheduled(layerScheduledDspTime);
+            }
+        }
+
+        void UpdateNoteLayerPause(bool shouldPause)
+        {
+            if (!noteLayersStarted || shouldPause == noteLayersPaused)
+                return;
+
+            if (shouldPause)
+            {
+                // Freeze the shared clock even if playback is still waiting to start.
+                layerElapsedSeconds += Math.Max(0d, AudioSettings.dspTime - layerScheduledDspTime);
+                foreach (var note in notes)
+                    note.source.Stop();
+            }
+            else
+            {
+                // Resume every layer from the same saved point on the shared clock.
+                ScheduleNoteLayers();
+            }
+            noteLayersPaused = shouldPause;
+        }
+
         void ResolveCell()
         {
             foreach(var n in notes)
             {
                 if(n.collected || n.cell!=playerCell) continue;
                 n.collected=true; Count++;
-                n.source.Play();
+                StartNoteLayers();
+                n.source.mute = false;
                 PlaySoundEffect(Count == notes.Length ? threeNotesSound : collectSound);
                 StartCoroutine(Fade(n));
             }

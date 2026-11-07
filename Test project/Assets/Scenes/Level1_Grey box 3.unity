@@ -17227,6 +17227,8 @@ MonoBehaviour:
   introText: {fileID: 1733224318}
   introSeconds: 3.5
   playIntroOnSceneEntry: 1
+  introMusicClip: {fileID: 0}
+  fadeIntroMusic: 1
 --- !u!114 &787352229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17250,16 +17252,16 @@ MonoBehaviour:
   notes:
   - model: {fileID: 2056284077}
     cell: {x: 4, y: 5}
-    clip: {fileID: 8300000, guid: 79d28b83de230bd4f899b3cf26201452, type: 3}
+    clip: {fileID: 8300000, guid: 61a5a1b5098f0df44b10452854db62da, type: 3}
   - model: {fileID: 1185847381}
     cell: {x: 1, y: 7}
-    clip: {fileID: 8300000, guid: d3e752197fe549a4c8f446adde94402b, type: 3}
+    clip: {fileID: 8300000, guid: f2d33cd5468493b40a92101663cd0996, type: 3}
   - model: {fileID: 356895770}
     cell: {x: 7, y: 2}
-    clip: {fileID: 8300000, guid: 98de430faefd63c44b946e780de94a53, type: 3}
+    clip: {fileID: 8300000, guid: 432da4cf074d72d4e83e4b2166147ffd, type: 3}
   - model: {fileID: 639235436}
     cell: {x: 6, y: 8}
-    clip: {fileID: 8300000, guid: f9b765d18c24caf4b8e062c7bec39d93, type: 3}
+    clip: {fileID: 8300000, guid: 95a3d50919bfabb48abb0a3d0ae0315b, type: 3}
   obstacles:
   - model: {fileID: 1191813354}
     home: {x: 6, y: 3}
