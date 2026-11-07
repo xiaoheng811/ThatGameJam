@@ -14176,10 +14176,10 @@ RectTransform:
   - {fileID: 1576259347}
   m_Father: {fileID: 211778285}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 99, y: -92}
-  m_SizeDelta: {x: 199.1466, y: 183.9905}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: -867, y: -82.4}
+  m_SizeDelta: {x: 115, y: 115}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &644478409
 MonoBehaviour:
@@ -20756,10 +20756,10 @@ RectTransform:
   - {fileID: 611046217}
   m_Father: {fileID: 122746112}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1044, y: -46}
-  m_SizeDelta: {x: 120.3069, y: 114.8161}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 850.6, y: 31.7}
+  m_SizeDelta: {x: 80, y: 76}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1011410650
 MonoBehaviour:
@@ -26094,7 +26094,7 @@ PrefabInstance:
     - target: {fileID: 4966409665695033816, guid: 3109aeb50f5556542bd0d1f158ca065d, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 82c8f7a43661a964fb301e14fdf4a62d, type: 2}
+      objectReference: {fileID: 2100000, guid: 8ae7706d54f55284aa49af6a2e24a8a0, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -30781,15 +30781,15 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4116315647
-  m_fontColor: {r: 1, g: 0.99332345, b: 0.34901965, a: 0.9607843}
+    rgba: 4121099517
+  m_fontColor: {r: 0.99371064, g: 0.989381, b: 0.6343498, a: 0.9607843}
   m_enableVertexGradient: 1
   m_colorMode: 3
   m_fontColorGradient:
-    topLeft: {r: 0.9056604, g: 0.16803128, b: 0.52685636, a: 1}
-    topRight: {r: 0.99215686, g: 0.3278741, b: 0.05490193, a: 1}
-    bottomLeft: {r: 0.8867924, g: 0.48605075, b: 0.18683974, a: 1}
-    bottomRight: {r: 1, g: 0.9744502, b: 0.41176474, a: 1}
+    topLeft: {r: 0.9748427, g: 0.91216993, b: 0.6713539, a: 1}
+    topRight: {r: 0.99371064, g: 0.71308625, b: 0.5968513, a: 1}
+    bottomLeft: {r: 0.9622642, g: 0.6687433, b: 0.95053947, a: 1}
+    bottomRight: {r: 0.8930817, g: 0.48774722, b: 0.29488537, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0

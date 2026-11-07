@@ -44,6 +44,14 @@ namespace ThatGameJam.LevelOne
         private Color introOriginalColor;
         private Coroutine introRoutine;
 
+        [Header("Introduction Music")]
+        [Tooltip("Optional. Leave empty to continue the main menu music during the introduction.")]
+        [SerializeField] private AudioClip introMusicClip;
+        [SerializeField] private bool fadeIntroMusic = true;
+        private bool introMusicActive;
+        private AudioClip menuClipBeforeIntro;
+        private float menuVolumeBeforeIntro;
+
         Level1Game game;
         bool quitPending;
         bool restoreWinAfterSettings;
@@ -55,6 +63,33 @@ namespace ThatGameJam.LevelOne
             Visible(pausePanel) || Visible(settingPanel2) || Visible(quitPanel) || Visible(newTutorialPanel);
         public bool AudioPaused => Visible(pausePanel) || Visible(quitPanel);
         static bool Visible(GameObject o) => o && o.activeInHierarchy;
+
+        private void Update()
+        {
+            if (!game || !game.Playing || !Visible(gameplayHUD) ||
+                introRoutine != null || nextLevelPending || quitPending)
+                return;
+
+            if (Visible(newTutorialPanel) || Visible(settingPanel2) ||
+                Visible(quitPanel) || Visible(endingPanel))
+                return;
+
+#if ENABLE_INPUT_SYSTEM
+            var keyboard = UnityEngine.InputSystem.Keyboard.current;
+            bool escapePressed = keyboard != null && keyboard.escapeKey.wasPressedThisFrame;
+#elif ENABLE_LEGACY_INPUT_MANAGER
+            bool escapePressed = Input.GetKeyDown(KeyCode.Escape);
+#else
+            bool escapePressed = false;
+#endif
+            if (!escapePressed)
+                return;
+
+            if (Visible(pausePanel))
+                pausePanel.SetActive(false);
+            else
+                OpenGameplayPause();
+        }
 
         public bool ValidateReferences(int noteCount)
         {
@@ -172,8 +207,19 @@ namespace ThatGameJam.LevelOne
 
             introText.color = introOriginalColor;
             introText.gameObject.SetActive(true);
-            if (menuMusic && !menuMusic.isPlaying)
-                menuMusic.Play();
+            if (menuMusic)
+            {
+                menuClipBeforeIntro = menuMusic.clip;
+                menuVolumeBeforeIntro = menuMusic.volume;
+                introMusicActive = true;
+                if (introMusicClip)
+                {
+                    menuMusic.Stop();
+                    menuMusic.clip = introMusicClip;
+                }
+                if (!menuMusic.isPlaying)
+                    menuMusic.Play();
+            }
 
             introRoutine = StartCoroutine(FadeIntroduction());
         }
@@ -186,15 +232,33 @@ namespace ThatGameJam.LevelOne
             {
                 yield return null;
                 elapsed += Time.unscaledDeltaTime;
+                float progress = Mathf.Clamp01(elapsed / duration);
                 Color color = introOriginalColor;
-                color.a *= 1f - Mathf.Clamp01(elapsed / duration);
+                color.a *= 1f - progress;
                 introText.color = color;
+                if (introMusicActive && menuMusic && fadeIntroMusic)
+                    menuMusic.volume = menuVolumeBeforeIntro * (1f - progress);
             }
 
             introText.gameObject.SetActive(false);
             introText.color = introOriginalColor;
             introRoutine = null;
             game.Play();
+        }
+
+        private void RestoreMenuMusicAfterIntroduction()
+        {
+            if (!introMusicActive)
+                return;
+
+            if (menuMusic)
+            {
+                menuMusic.Stop();
+                menuMusic.clip = menuClipBeforeIntro;
+                menuMusic.volume = menuVolumeBeforeIntro;
+            }
+            introMusicActive = false;
+            menuClipBeforeIntro = null;
         }
 
         public void ShowStartTutorial()
@@ -273,6 +337,7 @@ namespace ThatGameJam.LevelOne
                 StopCoroutine(introRoutine);
                 introRoutine = null;
             }
+            RestoreMenuMusicAfterIntroduction();
             if (introText)
             {
                 introText.gameObject.SetActive(false);
