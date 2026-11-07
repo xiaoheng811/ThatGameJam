@@ -23,13 +23,19 @@ namespace ThatGameJam.LevelOne
         public UnityEngine.UI.Slider[] volumeSliders = new UnityEngine.UI.Slider[3];
         public Color collectedColor = new Color(.15f,.85f,.75f,1);
         public Color lockedColor = new Color(.8f,.8f,.8f,1);
+
+        [Header("First Level Tutorial")]
+        [SerializeField] private GameObject newTutorialPanel;
+        [SerializeField] private UnityEngine.UI.Button newTutorialCloseButton;
+
         Level1Game game;
         bool quitPending;
         bool nextLevelPending;
         Color[] iconDefaults;
         Color[][] sliderDefaults;
         UnityEngine.UI.Graphic[][] sliderGraphics;
-        public bool BlocksGameplay => Visible(pausePanel) || Visible(settingPanel2) || Visible(quitPanel);
+        public bool BlocksGameplay =>
+            Visible(pausePanel) || Visible(settingPanel2) || Visible(quitPanel) || Visible(newTutorialPanel);
         public bool AudioPaused => Visible(pausePanel) || Visible(quitPanel);
         static bool Visible(GameObject o) => o && o.activeInHierarchy;
 
@@ -82,6 +88,8 @@ namespace ThatGameJam.LevelOne
             }
             // Replace only these assigned buttons' events in memory. Prefab assets are untouched.
             Wire(playButton,game.Play);
+            if (newTutorialPanel && newTutorialCloseButton)
+                Wire(newTutorialCloseButton, () => newTutorialPanel.SetActive(false));
             Wire(settingsButton2,()=>settingPanel2.SetActive(true));
             Wire(settingsCloseButton,()=>settingPanel2.SetActive(false));
             Wire(pauseButton,()=>pausePanel.SetActive(true));
@@ -109,8 +117,15 @@ namespace ThatGameJam.LevelOne
             button.onClick=new UnityEngine.UI.Button.ButtonClickedEvent();
             button.onClick.AddListener(action);
         }
+        public void ShowStartTutorial()
+        {
+            if (newTutorialPanel && newTutorialCloseButton)
+                newTutorialPanel.SetActive(true);
+        }
         public void ResetView(bool playing)
         {
+            if (newTutorialPanel)
+                newTutorialPanel.SetActive(false);
             settingPanel2.SetActive(false); pausePanel.SetActive(false);
             endingPanel.SetActive(false); quitPanel.SetActive(false);
             buttonGroup.SetActive(!playing);
