@@ -14795,7 +14795,7 @@ PrefabInstance:
       insertIndex: 0
       addedObject: {fileID: 2048819985}
     - targetCorrespondingSourceObject: {fileID: 977140190222491785, guid: 6a9fdca2dc888e04ab9c490a6e34441e, type: 3}
-      insertIndex: 6
+      insertIndex: 1
       addedObject: {fileID: 16384443}
     - targetCorrespondingSourceObject: {fileID: 977140190222491785, guid: 6a9fdca2dc888e04ab9c490a6e34441e, type: 3}
       insertIndex: 7
@@ -16969,7 +16969,7 @@ MonoBehaviour:
   lockedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
   newTutorialPanel: {fileID: 0}
   newTutorialCloseButton: {fileID: 0}
-  seasonTitle: {fileID: 0}
+  seasonTitle: {fileID: 1488328303}
   seasonWinColor: {r: 0.15, g: 0.85, b: 0.75, a: 1}
   introText: {fileID: 16384444}
   introSeconds: 3.5
