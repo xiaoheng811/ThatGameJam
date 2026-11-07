@@ -17257,7 +17257,7 @@ MonoBehaviour:
   lockedColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
   newTutorialPanel: {fileID: 0}
   newTutorialCloseButton: {fileID: 0}
-  seasonTitle: {fileID: 0}
+  seasonTitle: {fileID: 575938235}
   seasonWinColor: {r: 0.3882353, g: 0.83137256, b: 0.95686275, a: 1}
   introText: {fileID: 1673366296}
   introSeconds: 3.5
@@ -30105,10 +30105,10 @@ MonoBehaviour:
   m_enableVertexGradient: 1
   m_colorMode: 3
   m_fontColorGradient:
-    topLeft: {r: 0.6194968, g: 0.85208726, b: 1, a: 1}
-    topRight: {r: 0.49147573, g: 0.83363956, b: 0.8930817, a: 1}
-    bottomLeft: {r: 0.728729, g: 0.8186249, b: 0.8679245, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 0.49147573, g: 0.83363956, b: 0.8930817, a: 0.57254905}
+    bottomLeft: {r: 0.7355523, g: 0.86005414, b: 0.9245283, a: 1}
+    bottomRight: {r: 0.5691823, g: 0.8095527, b: 1, a: 0.80784315}
   m_fontColorGradientPreset: {fileID: 0}
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0

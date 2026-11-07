@@ -16997,16 +16997,16 @@ MonoBehaviour:
   notes:
   - model: {fileID: 1185847381}
     cell: {x: 6, y: 7}
-    clip: {fileID: 8300000, guid: aac0abd205a16b34ba9b573163c5623f, type: 3}
+    clip: {fileID: 8300000, guid: cfb6a765d07ee974ebb53994b12aad5a, type: 3}
   - model: {fileID: 2056284077}
     cell: {x: 2, y: 8}
-    clip: {fileID: 8300000, guid: 5405afe3a3d11ea4bad31bd871ade665, type: 3}
+    clip: {fileID: 8300000, guid: f0c25cf80546ecd45991a326aab8e2cf, type: 3}
   - model: {fileID: 356895770}
     cell: {x: 7, y: 3}
-    clip: {fileID: 8300000, guid: fa6652d07020cbd439c4fc29fa6c644f, type: 3}
+    clip: {fileID: 8300000, guid: 2e2078e28cd35924ca76edeabe72427a, type: 3}
   - model: {fileID: 1745780858}
     cell: {x: 5, y: 5}
-    clip: {fileID: 8300000, guid: 2c566724f842f1d408b65088755cd538, type: 3}
+    clip: {fileID: 8300000, guid: 534ad0b738a8e2343bf100656e06e06a, type: 3}
   obstacles:
   - model: {fileID: 1191813354}
     home: {x: 2, y: 5}
